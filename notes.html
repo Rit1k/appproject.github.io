@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note-taking - StudyHaven</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+      // Fetch notes from the server and display them
+      async function fetchNotes() {
+          try {
+              const response = await fetch('http://localhost:8080/get-notes');
+              const notes = await response.json();
+              const notesContainer = document.querySelector('.notes-display');
+               // Clear existing notes to avoid duplicates
+               if (notesContainer) {
+                    notesContainer.innerHTML = ''; // Clear existing notes to avoid duplicates
+                }
+              // Loop through each note and create an HTML structure
+              notes.forEach(note => {
+                  const noteElement = document.createElement('div');
+                  noteElement.classList.add('note');
+
+                  const titleElement = document.createElement('div');
+                  titleElement.classList.add('note-title');
+                  titleElement.textContent = note.title;
+
+                  const contentElement = document.createElement('div');
+                  contentElement.classList.add('note-content');
+                  contentElement.textContent = note.content;
+
+                  // Append title and content to the note div
+                  noteElement.appendChild(titleElement);
+                  noteElement.appendChild(contentElement);
+
+                  // Append note div to the notes container
+                  notesContainer.appendChild(noteElement);
+              });
+          } catch (error) {
+              console.error('Error fetching notes:', error);
+          }
+      }
+
+      // Function to add a new note to the server
+      async function addNote(event) {
+    event.preventDefault(); // Prevent form submission and page reload
+    const noteContent = document.querySelector('.note-taking-area').value;
+    const noteTitle = "Untitled Note"; // You can make this dynamic if needed
+
+    if (noteContent) {
+        try {
+            const response = await fetch('http://localhost:8080/add-note', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: noteTitle, content: noteContent })
+            });
+            
+            if (response.ok) {
+                document.querySelector('.note-taking-area').value = ''; // Clear the textarea
+                await fetchNotes(); // Refresh note list to display new note
+            } else {
+                console.error('Failed to add note:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error adding note:', error);
+        }
+    }
+}
+
+
+
+      document.addEventListener('DOMContentLoaded', () => {
+          // Fetch existing notes and add event listener for adding new note
+          document.querySelector('.note-save-btn')?.addEventListener('click', addNote);
+          fetchNotes(); // Fetch notes when the page loads
+      });
+  </script>
+</head>
+<body>
+    <div class="note-taking-container">
+        <a href="main.html" class="home-link">Home</a>
+        <h2 class="note-taking-title">Note Taking</h2>
+        
+        <!-- Note-taking input area -->
+        <form onsubmit="addNote(event)">
+          <textarea class="note-taking-area" name="note-content" placeholder="Write your notes here..."></textarea>
+          
+          <div class="note-taking-buttons">
+            <button type="submit" class="note-save-btn">Save Note</button>
+            <button type="reset" class="note-clear-btn">Clear Note</button>
+          </div>
+        </form>
+      
+        <!-- Display previously saved notes from the database -->
+        <div class="notes-display">
+          <!-- Example of how saved notes can be displayed -->
+          <div class="note">
+            <div class="note-title">Meeting Notes</div>
+            <div class="note-content">Discussed the new feature roadmap for the upcoming release...</div>
+          </div>
+      
+          <div class="note">
+            <div class="note-title">Study Plan</div>
+            <div class="note-content">Focus on OS Lab prep and revise data structures for the midterms...</div>
+          </div>
+      
+          <!-- Add more note divs here dynamically via server-side scripting -->
+        </div>
+      </div>
+        
+    <!-- <script src="script.js"></script> -->
+</body>
+</html>

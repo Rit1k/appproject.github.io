@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - StudyHaven</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Fetch tasks from the server and display them
+        async function fetchTasks() {
+      try {
+        console.log("Called fetchTasks()");
+          const response = await fetch('http://localhost:8080/handletasks');
+          const tasks = await response.json();
+        console.log(tasks);
+          const tasksContainer = document.querySelector('.tasks-list');
+          console.log(tasksContainer);
+          tasksContainer.innerHTML = ''; // Clear existing tasks to avoid duplicates
+
+          // Loop through each task and create an HTML structure with a checkbox
+          tasks.forEach(task => {
+              const taskElement = document.createElement('div');
+              taskElement.classList.add('task');
+
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.checked = task.completed;
+              checkbox.classList.add('clickToDelete');
+              checkbox.addEventListener('change', () => toggleTaskCompletion(task.id, checkbox.checked));
+
+              const label = document.createElement('label');
+              label.textContent = task.title;
+
+              // Append checkbox and label to the task div
+              taskElement.appendChild(checkbox);
+              taskElement.appendChild(label);
+
+              // Append task div to the tasks container
+              tasksContainer.appendChild(taskElement);
+              console.log(tasksContainer);
+          });
+      } catch (error) {
+          console.error('Error fetching tasks:', error);
+      }
+  }
+
+  // Function to add a new task to the server
+  async function addTask(event) {
+      event.preventDefault(); // Prevent form submission and page reload
+      const taskTitle = document.querySelector('.task-input').value;
+      if (taskTitle) {
+          try {
+              const response = await fetch('http://localhost:8080/add-task', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'text/plain' },
+                  body: taskTitle
+              });
+              if (response.ok) {
+                  document.querySelector('.task-input').value = ''; 
+                  console.log("Calling fetchTasks()");// Clear the input field
+                  await fetchTasks(); // Refresh task list to display new task
+              } else {
+                  console.error('Failed to add task:', response.statusText);
+              }
+          } catch (error) {
+              console.error('Error adding task:', error);
+          }
+      }
+  }
+
+  // Function to toggle task completion
+  async function toggleTaskCompletion(taskId, completedStatus) {
+            try {
+                const response = await fetch('http://localhost:8080/toggle-task', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: taskId.toString() // send the taskId in the body of the PUT request
+                });
+
+                if (response.ok) {
+                    console.log('Task status toggled successfully');
+                    await fetchTasks(); // Refresh task list after toggling
+                    if (completedStatus) { 
+                        await deleteCompletedTasks(); // Delete completed tasks after toggling
+                    }
+                } else {
+                    console.error('Failed to toggle task completion:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error toggling task completion:', error);
+            }
+        }
+
+        // Function to delete all completed tasks
+        async function deleteCompletedTasks() {
+        try {
+            const response = await fetch('http://localhost:8080/delete-completed-tasks', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                console.log('Completed tasks deleted successfully');
+                fetchTasks();  // Refresh task list after deletion
+            } else {
+                console.error('Error deleting completed tasks:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error deleting completed tasks:', error);
+        }
+    }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.task-add-btn')?.addEventListener('click', addTask);
+            document.querySelector('.clickToDelete')?.addEventListener('click', deleteTask);
+            fetchTasks();
+        });
+        
+  
+    </script>
+</head>
+<body>
+    <div class="tasks-container">
+        <h2 class="tasks-title">Tasks</h2>
+        <form onsubmit="addTask(event)">
+            <input type="text" class="task-input" placeholder="Add new task...">
+            <button type="submit" class="task-add-btn">Add Task</button>
+        </form>
+        <div class="tasks-list"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

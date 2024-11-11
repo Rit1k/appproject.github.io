@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyHaven - Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      async function fetchData() {
+          try {
+              const response = await fetch('http://localhost:8080/api/data');
+              const data = await response.text();
+              document.getElementById("output").innerText = data;
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      }
+  </script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+        <h1>StudyHaven</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="main.html" class="nav-item">Dashboard</a>
+        <a href="calender.html" class="nav-item">Calendar</a>
+        <a href="tasks.html" class="nav-item">Tasks</a>
+        <a href="notes.html" class="nav-item">Notes</a>
+        <a href="focus-tools.html" class="nav-item">Focus Tools</a>
+        <a href="settings.html" class="nav-item">Settings</a>
+      </nav>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <button class="login-btn" onclick="showLogin()">Log In</button>
+      </header>
+      <div class="greeting">
+        <h2>Hello, [User's Name]!</h2>
+      </div>
+      <div class="features">
+        <div class="feature-box">
+          <h3>Calendar</h3>
+          <p>Organize your schedule with ease.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Tasks</h3>
+          <p>Keep track of assignments and to-do lists.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Notes</h3>
+          <p>Take notes and access them anytime.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Focus Tools</h3>
+          <p>Use Pomodoro timers and ambient noise to stay focused.</p>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+      function showLogin() {
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

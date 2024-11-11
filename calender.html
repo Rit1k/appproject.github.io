@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Tab with Calendar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="schedule-container">
+    <a href="main.html" class="home-link">Home</a>
+    <h2 class="schedule-title">Schedule</h2>
+    
+    <!-- Schedule Input Area -->
+    <form method="POST" action="/add-schedule">
+      <input type="text" class="schedule-input" name="event-title" placeholder="Add new event...">
+      <input type="datetime-local" class="schedule-datetime" name="event-datetime">
+      <button type="submit" class="schedule-add-btn">Add Event</button>
+    </form>
+
+    <!-- Calendar and Reminders Section -->
+    <div class="calendar-container">
+      <h3 class="calendar-title">Calendar</h3>
+      <div id="calendar" class="calendar"></div>
+
+      <div class="reminders">
+        <h4 class="reminders-title">Reminders</h4>
+        <form id="reminder-form">
+          <input type="text" class="reminder-input" id="reminder-text" placeholder="Add a reminder...">
+          <button type="submit" class="reminder-add-btn">Add Reminder</button>
+        </form>
+        <div id="reminder-list" class="reminder-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
